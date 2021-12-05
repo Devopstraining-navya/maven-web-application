@@ -1,0 +1,48 @@
+pipeline{
+    agent any
+    tools
+    {
+        maven 'maven3.8.4'
+    }
+    stages
+    {
+    stage('GitStep')
+    {
+        steps{
+     git branch: 'development', credentialsId: '2e380640-23a1-4ceb-a0ed-13de44449739', url: 'https://github.com/Devopstraining-navya/maven-web-application.git'
+    }
+    }
+    stage('Build')
+    {
+        steps
+        {
+        sh "mvn clean package"
+    }
+    }
+    stage('sonarqubereport')
+    {
+        steps
+        {
+        sh "mvn sonar:sonar"
+    }
+    }
+    stage('storeinnexus')
+    {
+        steps
+        {
+         sh "mvn deploy"
+    }
+    }
+    stage('deploy')
+    {
+     steps
+     {
+        sshagent(['9a3c3ecd-c8fb-4767-aa78-2329aaa90572']) {
+     sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@15.206.159.145:/opt/apache-tomcat-9.0.54/webapps/"
+    }
+     }
+        
+    }
+    }
+    
+}
