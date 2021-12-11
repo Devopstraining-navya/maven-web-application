@@ -1,0 +1,12 @@
+node('node')
+{
+    def maven = tool name : "maven3.8.4"
+    stage('GitStep')
+    {
+     git branch: 'development', credentialsId: '2e380640-23a1-4ceb-a0ed-13de44449739', url: 'https://github.com/Devopstraining-navya/maven-web-application.git'
+    }
+    stage('Build')
+    {
+        sh "${maven}/bin/mvn clean package"
+    }
+    }
